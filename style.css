@@ -104,7 +104,6 @@ h1 {
   z-index: 2;
   left: 50%;
   top: 50%;
-  max-width: 90%;
   padding: 7px 11px;
   border-radius: 999px;
   background: rgb(31 33 29 / 88%);
@@ -112,10 +111,8 @@ h1 {
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
-  overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  text-overflow: ellipsis;
   text-align: center;
   transform: translate(-50%, calc(-50% + 8px));
   transition: opacity 180ms ease, transform 180ms ease;

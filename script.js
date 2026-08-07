@@ -8,6 +8,7 @@ const MAX_AREA_FILL = 0.6;
 const ENTRY_GRAVITY = 1250;
 const SETTLED_GRAVITY = 1900;
 const BOUNCE = 0.62;
+const MAX_THROW_SPEED = 1800;
 const MAX_ANGULAR_SPEED = 120;
 const ROTATIONAL_FRICTION = 1.6;
 
@@ -21,8 +22,10 @@ function addDragControls(ball) {
     const nextX = Math.max(ball.radius, Math.min(rect.width - ball.radius, event.clientX - rect.left));
     const nextY = Math.max(ball.radius, Math.min(rect.height - ball.radius, event.clientY - rect.top));
 
-    ball.vx = (nextX - ball.x) / elapsed;
-    ball.vy = (nextY - ball.y) / elapsed;
+    const instantVx = (nextX - ball.x) / elapsed;
+    const instantVy = (nextY - ball.y) / elapsed;
+    ball.vx = Math.max(-MAX_THROW_SPEED, Math.min(MAX_THROW_SPEED, ball.vx * 0.35 + instantVx * 0.65));
+    ball.vy = Math.max(-MAX_THROW_SPEED, Math.min(MAX_THROW_SPEED, ball.vy * 0.35 + instantVy * 0.65));
     ball.x = nextX;
     ball.y = nextY;
     ball.lastTime = now;
@@ -39,8 +42,11 @@ function addDragControls(ball) {
   });
 
   ball.element.addEventListener("pointermove", moveBall);
-  ball.element.addEventListener("pointerup", (event) => {
-    moveBall(event);
+  ball.element.addEventListener("pointerup", () => {
+    const releaseDelay = performance.now() - ball.lastTime;
+    const momentumRetention = Math.max(0, 1 - releaseDelay / 180);
+    ball.vx *= momentumRetention;
+    ball.vy *= momentumRetention;
     ball.dragging = false;
     ball.angularVelocity = Math.max(-MAX_ANGULAR_SPEED, Math.min(MAX_ANGULAR_SPEED, ball.vx * 0.08));
     ball.element.classList.remove("dragging");

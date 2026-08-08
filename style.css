@@ -7,14 +7,22 @@
 
 * { box-sizing: border-box; }
 
+html,
 body {
   margin: 0;
   min-width: 320px;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  overscroll-behavior: none;
 }
 
 main {
   min-height: 100vh;
   padding: clamp(24px, 5vw, 72px);
+  overflow: hidden;
 }
 
 header {

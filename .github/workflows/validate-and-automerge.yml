@@ -1,7 +1,7 @@
 name: Validate members and auto-merge
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
@@ -16,8 +16,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Check out pull request
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Reject changes outside members
@@ -77,3 +78,15 @@ jobs:
           fi
 
           echo "Every tracked file in members/ is a valid image."
+
+  enable-auto-merge:
+    name: Enable auto-merge
+    needs: validate-member-images
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Enable Auto-Merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --merge "$PR_URL"
